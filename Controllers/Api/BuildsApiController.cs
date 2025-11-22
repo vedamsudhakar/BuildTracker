@@ -30,9 +30,15 @@ namespace BuildTracker.Controllers.Api
                 return BadRequest(ModelState);
             }
 
+            var application = await _context.Applications.FirstOrDefaultAsync(a => a.Name == request.ApplicationName);
+            if (application == null)
+            {
+                return BadRequest($"Application '{request.ApplicationName}' not found.");
+            }
+
             var build = new BuildInfo
             {
-                BuildType = request.BuildType,
+                ApplicationId = application.Id,
                 BuildPath = request.BuildPath,
                 ReleaseNotes = request.ReleaseNotes,
                 Date = request.Date ?? DateTime.Now,
@@ -80,7 +86,7 @@ namespace BuildTracker.Controllers.Api
     public class CreateBuildRequest
     {
         [Required]
-        public BuildType BuildType { get; set; }
+        public string ApplicationName { get; set; } = string.Empty;
 
         [Required]
         public string BuildPath { get; set; } = string.Empty;

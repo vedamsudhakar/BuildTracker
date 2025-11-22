@@ -2,23 +2,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BuildTracker.Models
 {
-    public enum BuildType
-    {
-        [Display(Name = "2D")]
-        TwoD,
-        [Display(Name = "3D")]
-        ThreeD,
-        [Display(Name = "Weld Inspect")]
-        WeldInspect
-    }
-
     public class BuildInfo
     {
         public int Id { get; set; }
 
         [Required]
-        [Display(Name = "Build Type")]
-        public BuildType BuildType { get; set; }
+        [Display(Name = "Application")]
+        public int ApplicationId { get; set; }
+        public Application? Application { get; set; }
 
         [Required]
         [Display(Name = "Build Path")]

@@ -3,8 +3,9 @@
 
 param(
     [Parameter(Mandatory=$true)]
-    [ValidateSet("Development", "QA", "Staging", "Production")]
-    [string]$BuildType,
+    [Parameter(Mandatory=$true)]
+    [ValidateSet("2D", "3D", "Weld Inspect")]
+    [string]$ApplicationName,
     
     [Parameter(Mandatory=$true)]
     [string]$BuildPath,
@@ -22,17 +23,11 @@ param(
     [string]$ApiUrl = "http://localhost:5253/api/builds"
 )
 
-# Map build type string to integer
-$buildTypeMap = @{
-    "Development" = 0
-    "QA" = 1
-    "Staging" = 2
-    "Production" = 3
-}
+# Mapping removed as API now accepts ApplicationName directly
 
 # Create the build info object
 $buildInfo = @{
-    buildType = $buildTypeMap[$BuildType]
+    applicationName = $ApplicationName
     buildPath = $BuildPath
     releaseNotes = $ReleaseNotes
     version = $Version
@@ -53,7 +48,7 @@ $headers = @{
 
 try {
     Write-Host "Adding build information to Build Tracker..." -ForegroundColor Cyan
-    Write-Host "Build Type: $BuildType" -ForegroundColor Gray
+    Write-Host "Application: $ApplicationName" -ForegroundColor Gray
     Write-Host "Build Path: $BuildPath" -ForegroundColor Gray
     Write-Host "Version: $Version" -ForegroundColor Gray
     

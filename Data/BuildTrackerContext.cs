@@ -14,5 +14,6 @@ namespace BuildTracker.Data
 
         public DbSet<BuildInfo> Builds { get; set; }
         public DbSet<FtpServer> FtpServers { get; set; }
+        public DbSet<Application> Applications { get; set; }
     }
 }

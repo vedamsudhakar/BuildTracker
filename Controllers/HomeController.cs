@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using BuildTracker.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace BuildTracker.Controllers;
 
@@ -20,31 +21,18 @@ public class HomeController : Controller
     public IActionResult Index()
     {
         var data = _context.Builds
-            .GroupBy(b => b.BuildType)
-            .Select(g => new { Type = g.Key, Count = g.Count() })
+            .Include(b => b.Application)
+            .GroupBy(b => b.Application.Name)
+            .Select(g => new { Name = g.Key, Count = g.Count() })
             .ToList();
 
         var analytics = data.Select(d => new BuildAnalyticsViewModel
         {
-            BuildType = GetDisplayName(d.Type),
+            ApplicationName = d.Name,
             Count = d.Count
         }).ToList();
 
         return View(analytics);
-    }
-
-    private string GetDisplayName(Enum value)
-    {
-        var field = value.GetType().GetField(value.ToString());
-        var attribute = field?.GetCustomAttributes(typeof(System.ComponentModel.DataAnnotations.DisplayAttribute), false)
-                             .FirstOrDefault() as System.ComponentModel.DataAnnotations.DisplayAttribute;
-        return attribute?.Name ?? value.ToString();
-    }
-
-    [AllowAnonymous]
-    public IActionResult Privacy()
-    {
-        return View();
     }
 
     [AllowAnonymous]

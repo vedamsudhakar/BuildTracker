@@ -31,7 +31,7 @@
     <thead>
         <tr>
             <th style="width: 40px;"></th>
-            <th>@Html.DisplayNameFor(model => model.BuildType)</th>
+            <th>@Html.DisplayNameFor(model => model.Application)</th>
             <th>@Html.DisplayNameFor(model => model.BuildPath)</th>
             <th>@Html.DisplayNameFor(model => model.Date)</th>
             <th>@Html.DisplayNameFor(model => model.Version)</th>
@@ -44,7 +44,7 @@
             <td>
                 <button class="btn btn-sm btn-outline-secondary expander-btn" type="button" data-bs-toggle="collapse" data-bs-target="#notes-@item.Id" aria-expanded="false" aria-controls="notes-@item.Id"></button>
             </td>
-            <td>@Html.DisplayFor(modelItem => item.BuildType)</td>
+            <td>@Html.DisplayFor(modelItem => item.Application.Name)</td>
             <td>@Html.DisplayFor(modelItem => item.BuildPath)</td>
             <td>@Html.DisplayFor(modelItem => item.Date)</td>
             <td>@Html.DisplayFor(modelItem => item.Version)</td>

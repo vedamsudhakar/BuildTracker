@@ -21,8 +21,7 @@ namespace BuildTracker.Controllers
         {
             ViewData["CurrentFilter"] = searchString;
 
-            var builds = from b in _context.Builds
-                         select b;
+            IQueryable<BuildInfo> builds = _context.Builds.Include(b => b.Application);
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -43,6 +42,7 @@ namespace BuildTracker.Controllers
             }
 
             var buildInfo = await _context.Builds
+                .Include(b => b.Application)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (buildInfo == null)
             {
@@ -56,13 +56,14 @@ namespace BuildTracker.Controllers
         public IActionResult Create()
         {
             ViewData["FtpServerId"] = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.FtpServers.Where(f => f.IsActive), "Id", "Name");
+            ViewData["ApplicationId"] = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.Applications, "Id", "Name");
             return View();
         }
 
         // POST: Builds/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,BuildType,BuildPath,ReleaseNotes,Date,Version,FtpServerId")] BuildInfo buildInfo)
+        public async Task<IActionResult> Create([Bind("Id,ApplicationId,BuildPath,ReleaseNotes,Date,Version,FtpServerId")] BuildInfo buildInfo)
         {
             if (ModelState.IsValid)
             {
@@ -71,6 +72,7 @@ namespace BuildTracker.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["FtpServerId"] = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.FtpServers.Where(f => f.IsActive), "Id", "Name", buildInfo.FtpServerId);
+            ViewData["ApplicationId"] = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.Applications, "Id", "Name", buildInfo.ApplicationId);
             return View(buildInfo);
         }
 
@@ -88,13 +90,14 @@ namespace BuildTracker.Controllers
                 return NotFound();
             }
             ViewData["FtpServerId"] = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.FtpServers.Where(f => f.IsActive), "Id", "Name", buildInfo.FtpServerId);
+            ViewData["ApplicationId"] = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.Applications, "Id", "Name", buildInfo.ApplicationId);
             return View(buildInfo);
         }
 
         // POST: Builds/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,BuildType,BuildPath,ReleaseNotes,Date,Version,FtpServerId")] BuildInfo buildInfo)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,ApplicationId,BuildPath,ReleaseNotes,Date,Version,FtpServerId")] BuildInfo buildInfo)
         {
             if (id != buildInfo.Id)
             {
@@ -122,6 +125,7 @@ namespace BuildTracker.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["FtpServerId"] = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.FtpServers.Where(f => f.IsActive), "Id", "Name", buildInfo.FtpServerId);
+            ViewData["ApplicationId"] = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.Applications, "Id", "Name", buildInfo.ApplicationId);
             return View(buildInfo);
         }
 
@@ -135,6 +139,7 @@ namespace BuildTracker.Controllers
 
             var buildInfo = await _context.Builds
                 .Include(b => b.FtpServer)
+                .Include(b => b.Application)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (buildInfo == null)
             {

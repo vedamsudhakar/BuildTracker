@@ -15,9 +15,8 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="row col-md-12">
                 <div class="col-md-3 form-group mb-3">
-                    <label asp-for="BuildType" class="control-label"></label>
-                    <select asp-for="BuildType" class="form-control" asp-items="Html.GetEnumSelectList<BuildType>()"></select>
-                    <span asp-validation-for="BuildType" class="text-danger"></span>
+                    <label asp-for="ApplicationId" class="control-label"></label>
+                    <select asp-for="ApplicationId" class ="form-control" asp-items="ViewBag.ApplicationId"></select>
                 </div>
                 <div class="col-md-3 form-group mb-3">
                     <label asp-for="Date" class="control-label"></label>
