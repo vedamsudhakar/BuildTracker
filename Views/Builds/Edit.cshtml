@@ -1,0 +1,88 @@
+@model BuildTracker.Models.BuildInfo
+@using BuildTracker.Models
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>BuildInfo</h4>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="row col-md-12">
+                <div class="col-md-3 form-group mb-3">
+                    <label asp-for="BuildType" class="control-label"></label>
+                    <select asp-for="BuildType" class="form-control" asp-items="Html.GetEnumSelectList<BuildType>()"></select>
+                    <span asp-validation-for="BuildType" class="text-danger"></span>
+                </div>
+                <div class="col-md-3 form-group mb-3">
+                    <label asp-for="Date" class="control-label"></label>
+                    <input asp-for="Date" class="form-control" />
+                    <span asp-validation-for="Date" class="text-danger"></span>
+                </div>
+                <div class="col-md-3 form-group mb-3">
+                    <label asp-for="Version" class="control-label"></label>
+                    <input asp-for="Version" class="form-control" />
+                    <span asp-validation-for="Version" class="text-danger"></span>
+                </div>
+                <div class="col-md-3 form-group mb-3">
+                    <label asp-for="FtpServerId" class="control-label"></label>
+                    <select asp-for="FtpServerId" class="form-control" asp-items="ViewBag.FtpServerId">
+                        <option value="">-- Select FTP Server (Optional) --</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="BuildPath" class="control-label"></label>
+                <input asp-for="BuildPath" class="form-control" />
+                <span asp-validation-for="BuildPath" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="ReleaseNotes" class="control-label"></label>
+                <textarea asp-for="ReleaseNotes" class="form-control" rows="5"></textarea>
+                <span asp-validation-for="ReleaseNotes" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <!-- Summernote CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+    <!-- Summernote JS -->
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#ReleaseNotes').summernote({
+                placeholder: 'Enter release notes here...',
+                tabsize: 2,
+                height: 300,
+                toolbar: [
+                    ['style', ['style']],
+                    ['font', ['bold', 'underline', 'clear']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['table', ['table']],
+                    ['insert', ['link', 'picture', 'video']],
+                    ['view', ['fullscreen', 'codeview', 'help']]
+                ]
+            });
+        });
+    </script>
+}

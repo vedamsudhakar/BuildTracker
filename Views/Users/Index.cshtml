@@ -1,0 +1,38 @@
+@model IEnumerable<BuildTracker.Controllers.UserViewModel>
+
+@{
+    ViewData["Title"] = "Users";
+}
+
+<h1>Users</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New User</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Roles</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Username</td>
+                <td>@item.Email</td>
+                <td>@string.Join(", ", item.Roles)</td>
+                <td>
+                    @if (!item.Username.Equals("admin", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,48 @@
+@model BuildTracker.Models.BuildInfo
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>BuildInfo</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.BuildType)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.BuildType)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.BuildPath)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.BuildPath)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ReleaseNotes)
+        </dt>
+        <dd class = "col-sm-10" style="white-space: pre-wrap">
+            @Html.Raw(Model.ReleaseNotes)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Date)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Date)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Version)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Version)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

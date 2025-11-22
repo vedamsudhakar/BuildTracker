@@ -1,0 +1,74 @@
+@model IEnumerable<BuildTracker.Models.BuildInfo>
+
+@{
+    ViewData["Title"] = "Builds";
+}
+
+<h1>Builds</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New</a>
+</p>
+
+<form asp-action="Index" method="get" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="SearchString" class="form-control" placeholder="Search by path, notes, or version..." value="@ViewData["CurrentFilter"]" />
+        <button type="submit" class="btn btn-outline-secondary">Search</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Clear</a>
+    </div>
+</form>
+
+<style>
+    .expander-btn[aria-expanded="false"]::before {
+        content: "+";
+    }
+    .expander-btn[aria-expanded="true"]::before {
+        content: "-";
+    }
+</style>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th style="width: 40px;"></th>
+            <th>@Html.DisplayNameFor(model => model.BuildType)</th>
+            <th>@Html.DisplayNameFor(model => model.BuildPath)</th>
+            <th>@Html.DisplayNameFor(model => model.Date)</th>
+            <th>@Html.DisplayNameFor(model => model.Version)</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id="builds-accordion">
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                <button class="btn btn-sm btn-outline-secondary expander-btn" type="button" data-bs-toggle="collapse" data-bs-target="#notes-@item.Id" aria-expanded="false" aria-controls="notes-@item.Id"></button>
+            </td>
+            <td>@Html.DisplayFor(modelItem => item.BuildType)</td>
+            <td>@Html.DisplayFor(modelItem => item.BuildPath)</td>
+            <td>@Html.DisplayFor(modelItem => item.Date)</td>
+            <td>@Html.DisplayFor(modelItem => item.Version)</td>
+            <td>
+                @if (item.FtpServerId != null)
+                {
+                    <a asp-action="Download" asp-route-id="@item.Id" class="btn btn-sm btn-success">Download</a>
+                }
+                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+            </td>
+        </tr>
+        <tr class="collapse" id="notes-@item.Id" data-bs-parent="#builds-accordion">
+            <td colspan="6">
+                <div class="card card-body bg-light">
+                    <strong>Release Notes:</strong>
+                    @if (!string.IsNullOrWhiteSpace(item.ReleaseNotes))
+                    {
+                        @Html.Raw(item.ReleaseNotes)
+                    }
+                </div>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
