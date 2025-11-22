@@ -9,5 +9,7 @@ namespace BuildTracker.Models
         [Required]
         [Display(Name = "Application Name")]
         public string Name { get; set; } = string.Empty;
+
+        public ICollection<Bug> Bugs { get; set; } = new List<Bug>();
     }
 }

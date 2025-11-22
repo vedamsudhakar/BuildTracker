@@ -43,6 +43,7 @@ namespace BuildTracker.Controllers
 
             var buildInfo = await _context.Builds
                 .Include(b => b.Application)
+                .Include(b => b.Bugs)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (buildInfo == null)
             {

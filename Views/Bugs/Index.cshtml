@@ -1,0 +1,76 @@
+@model IEnumerable<BuildTracker.Models.Bug>
+
+@{
+    ViewData["Title"] = "Bugs";
+}
+
+<h1>Bugs</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Report New Bug</a>
+</p>
+
+<form asp-action="Index" method="get" class="mb-3">
+    <div class="row g-3 align-items-center">
+        <div class="col-auto">
+            <select name="applicationId" class="form-select" asp-items="ViewBag.ApplicationId">
+                <option value="">All Applications</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <select name="status" class="form-select" asp-items="ViewBag.Status">
+                <option value="">All Statuses</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <select name="severity" class="form-select" asp-items="ViewBag.Severity">
+                <option value="">All Severities</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-outline-primary">Filter</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Clear</a>
+        </div>
+    </div>
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Id)</th>
+            <th>@Html.DisplayNameFor(model => model.Title)</th>
+            <th>@Html.DisplayNameFor(model => model.Application)</th>
+            <th>@Html.DisplayNameFor(model => model.Build)</th>
+            <th>@Html.DisplayNameFor(model => model.Severity)</th>
+            <th>@Html.DisplayNameFor(model => model.Status)</th>
+            <th>@Html.DisplayNameFor(model => model.AssignedToUser)</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>BUG-@item.Id</td>
+            <td>@Html.DisplayFor(modelItem => item.Title)</td>
+            <td>@Html.DisplayFor(modelItem => item.Application.Name)</td>
+            <td>@(item.Build != null ? item.Build.Version : "-")</td>
+            <td>
+                <span class="badge bg-@(item.Severity == BuildTracker.Models.BugSeverity.Critical ? "danger" : item.Severity == BuildTracker.Models.BugSeverity.High ? "warning" : "info")">
+                    @Html.DisplayFor(modelItem => item.Severity)
+                </span>
+            </td>
+            <td>
+                <span class="badge bg-@(item.Status == BuildTracker.Models.BugStatus.Closed ? "success" : item.Status == BuildTracker.Models.BugStatus.Fixed ? "primary" : "secondary")">
+                    @Html.DisplayFor(modelItem => item.Status)
+                </span>
+            </td>
+            <td>@(item.AssignedToUser != null ? item.AssignedToUser.UserName : "-")</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

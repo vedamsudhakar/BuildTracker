@@ -1,0 +1,112 @@
+@model BuildTracker.Models.Bug
+
+@{
+    ViewData["Title"] = "Bug Details";
+}
+
+<h1>Bug Details</h1>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-3">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">@Model.Title</h5>
+                <span class="badge bg-@(Model.Status == BuildTracker.Models.BugStatus.Closed ? "success" : Model.Status == BuildTracker.Models.BugStatus.Fixed ? "primary" : "secondary")">
+                    @Model.Status
+                </span>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Application:</strong> @Model.Application?.Name
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Build:</strong> @(Model.Build?.Version ?? "-")
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Type:</strong> @Model.Type
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Severity:</strong> 
+                        <span class="badge bg-@(Model.Severity == BuildTracker.Models.BugSeverity.Critical ? "danger" : Model.Severity == BuildTracker.Models.BugSeverity.High ? "warning" : "info")">
+                            @Model.Severity
+                        </span>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Assigned To:</strong> @(Model.AssignedToUser?.UserName ?? "Unassigned")
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Reporter:</strong> @(Model.CreatedByUser?.UserName ?? "Unknown")
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <strong>Environment:</strong> @(Model.EnvironmentDetails ?? "-")
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <ul class="nav nav-tabs" id="bugTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="desc-tab" data-bs-toggle="tab" data-bs-target="#desc" type="button" role="tab">Description</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="steps-tab" data-bs-toggle="tab" data-bs-target="#steps" type="button" role="tab">Steps to Reproduce</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="results-tab" data-bs-toggle="tab" data-bs-target="#results" type="button" role="tab">Results</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="attachments-tab" data-bs-toggle="tab" data-bs-target="#attachments" type="button" role="tab">Attachments</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="comments-tab" data-bs-toggle="tab" data-bs-target="#comments" type="button" role="tab">Comments</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab">History</button>
+            </li>
+        </ul>
+        <div class="tab-content p-3 border border-top-0" id="bugTabsContent">
+            <div class="tab-pane fade show active" id="desc" role="tabpanel">
+                @Html.Raw(Model.Description)
+            </div>
+            <div class="tab-pane fade" id="steps" role="tabpanel">
+                @Html.Raw(Model.StepsToReproduce)
+            </div>
+            <div class="tab-pane fade" id="results" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Expected Result</h6>
+                        <p>@Model.ExpectedResult</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Actual Result</h6>
+                        <p>@Model.ActualResult</p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="attachments" role="tabpanel">
+                <p>Attachments functionality coming soon...</p>
+            </div>
+            <div class="tab-pane fade" id="comments" role="tabpanel">
+                <p>Comments functionality coming soon...</p>
+            </div>
+            <div class="tab-pane fade" id="history" role="tabpanel">
+                <p>History functionality coming soon...</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning w-100 mb-2">Edit Bug</a>
+                <a asp-action="Index" class="btn btn-secondary w-100">Back to List</a>
+            </div>
+        </div>
+    </div>
+</div>

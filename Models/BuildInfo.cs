@@ -28,5 +28,7 @@ namespace BuildTracker.Models
         [Display(Name = "FTP Server")]
         public int? FtpServerId { get; set; }
         public FtpServer? FtpServer { get; set; }
+
+        public ICollection<Bug> Bugs { get; set; } = new List<Bug>();
     }
 }

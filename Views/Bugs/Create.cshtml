@@ -1,0 +1,144 @@
+@model BuildTracker.Models.Bug
+
+@{
+    ViewData["Title"] = "Report Bug";
+}
+
+<h1>Report Bug</h1>
+
+<h4>Bug Details</h4>
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            <div class="form-group mb-3">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="ApplicationId" class="control-label"></label>
+                        <select asp-for="ApplicationId" class ="form-control" asp-items="ViewBag.ApplicationId">
+                            <option value="">-- Select Application --</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="BuildId" class="control-label"></label>
+                        <select asp-for="BuildId" class ="form-control">
+                            <option value="">-- Select Build --</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="Type" class="control-label"></label>
+                        <select asp-for="Type" class="form-control" asp-items="Html.GetEnumSelectList<BuildTracker.Models.BugType>()"></select>
+                        <span asp-validation-for="Type" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="Severity" class="control-label"></label>
+                        <select asp-for="Severity" class="form-control" asp-items="Html.GetEnumSelectList<BuildTracker.Models.BugSeverity>()"></select>
+                        <span asp-validation-for="Severity" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="AssignedToUserId" class="control-label"></label>
+                        <select asp-for="AssignedToUserId" class ="form-control" asp-items="ViewBag.AssignedToUserId">
+                            <option value="">-- Unassigned --</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Description" class="control-label"></label>
+                <textarea asp-for="Description" class="form-control" id="Description"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="StepsToReproduce" class="control-label"></label>
+                <textarea asp-for="StepsToReproduce" class="form-control" id="StepsToReproduce"></textarea>
+                <span asp-validation-for="StepsToReproduce" class="text-danger"></span>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="ExpectedResult" class="control-label"></label>
+                        <textarea asp-for="ExpectedResult" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="ExpectedResult" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="ActualResult" class="control-label"></label>
+                        <textarea asp-for="ActualResult" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="ActualResult" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="EnvironmentDetails" class="control-label"></label>
+                <input asp-for="EnvironmentDetails" class="form-control" placeholder="OS, Browser, Device, etc." />
+                <span asp-validation-for="EnvironmentDetails" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Report Bug" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <!-- Summernote CSS/JS -->
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#Description').summernote({
+                height: 200,
+                placeholder: 'Detailed description of the bug...'
+            });
+            $('#StepsToReproduce').summernote({
+                height: 150,
+                placeholder: 'Step 1...\nStep 2...'
+            });
+
+            // Cascading Dropdown
+            $('#ApplicationId').change(function() {
+                var appId = $(this).val();
+                var buildSelect = $('#BuildId');
+                buildSelect.empty();
+                buildSelect.append('<option value="">-- Select Build --</option>');
+
+                if (appId) {
+                    $.getJSON('/Bugs/GetBuildsByApplication?applicationId=' + appId, function(data) {
+                        $.each(data, function(key, entry) {
+                            buildSelect.append($('<option></option>').attr('value', entry.id).text(entry.version));
+                        });
+                    });
+                }
+            });
+        });
+    </script>
+}
