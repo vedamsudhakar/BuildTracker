@@ -1,10 +1,12 @@
 @model IEnumerable<BuildTracker.Models.FtpServer>
 
 @{
-    ViewData["Title"] = "FTP Servers";
+    ViewData["Title"] = "Settings - FTP Servers";
 }
 
-<h1>FTP Servers</h1>
+<h1>Settings</h1>
+
+<partial name="_SettingsTabs" />
 
 <p>
     <a asp-action="Create" class="btn btn-primary">Create New</a>

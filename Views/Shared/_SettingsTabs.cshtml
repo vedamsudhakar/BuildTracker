@@ -1,0 +1,15 @@
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+}
+
+<ul class="nav nav-tabs mb-3">
+    <li class="nav-item">
+        <a class="nav-link @(currentController == "Applications" ? "active" : "")" asp-controller="Applications" asp-action="Index">Applications</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(currentController == "Users" ? "active" : "")" asp-controller="Users" asp-action="Index">Users</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(currentController == "FtpServers" ? "active" : "")" asp-controller="FtpServers" asp-action="Index">FTP Servers</a>
+    </li>
+</ul>
