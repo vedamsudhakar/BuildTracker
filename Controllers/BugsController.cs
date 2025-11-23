@@ -25,6 +25,7 @@ namespace BuildTracker.Controllers
                 .Include(b => b.Application)
                 .Include(b => b.Build)
                 .Include(b => b.AssignedToUser)
+                .Where(b => !b.IsDeleted)
                 .AsQueryable();
 
             if (applicationId.HasValue)
