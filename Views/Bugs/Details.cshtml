@@ -91,13 +91,99 @@
                 </div>
             </div>
             <div class="tab-pane fade" id="attachments" role="tabpanel">
-                <p>Attachments functionality coming soon...</p>
+                <div class="mb-3">
+                    <h5>Attachments</h5>
+                    @if (Model.Attachments != null && Model.Attachments.Any())
+                    {
+                        <ul class="list-group mb-3">
+                            @foreach (var attachment in Model.Attachments)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="@attachment.FilePath" target="_blank">@attachment.FileName</a>
+                                    <span class="text-muted small">Uploaded by @(attachment.UploadedByUser?.UserName ?? "Unknown") on @attachment.UploadedDate.ToShortDateString()</span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No attachments yet.</p>
+                    }
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <h6>Upload New Attachment</h6>
+                        <form asp-action="UploadAttachment" method="post" enctype="multipart/form-data">
+                            <input type="hidden" name="bugId" value="@Model.Id" />
+                            <div class="input-group">
+                                <input type="file" name="file" class="form-control" required />
+                                <button type="submit" class="btn btn-primary">Upload</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
             <div class="tab-pane fade" id="comments" role="tabpanel">
-                <p>Comments functionality coming soon...</p>
+                <div class="mb-3">
+                    <h5>Discussion</h5>
+                    @if (Model.Comments != null && Model.Comments.Any())
+                    {
+                        <div class="list-group mb-3">
+                            @foreach (var comment in Model.Comments.OrderBy(c => c.CreatedDate))
+                            {
+                                <div class="list-group-item list-group-item-action flex-column align-items-start">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">@(comment.AuthorUser?.UserName ?? "Unknown")</h6>
+                                        <small>@comment.CreatedDate.ToString("g")</small>
+                                    </div>
+                                    <p class="mb-1">@comment.Content</p>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No comments yet.</p>
+                    }
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <h6>Add Comment</h6>
+                        <form asp-action="AddComment" method="post">
+                            <input type="hidden" name="bugId" value="@Model.Id" />
+                            <div class="form-group mb-3">
+                                <textarea name="content" class="form-control" rows="3" required placeholder="Type your comment here..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Post Comment</button>
+                        </form>
+                    </div>
+                </div>
             </div>
             <div class="tab-pane fade" id="history" role="tabpanel">
-                <p>History functionality coming soon...</p>
+                <div class="mb-3">
+                    <h5>Activity Log</h5>
+                    @if (Model.History != null && Model.History.Any())
+                    {
+                        <ul class="list-group">
+                            @foreach (var item in Model.History.OrderByDescending(h => h.ChangedDate))
+                            {
+                                <li class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">@item.Description</h6>
+                                        <small>@item.ChangedDate.ToString("g")</small>
+                                    </div>
+                                    <small class="text-muted">By @(item.ChangedByUser?.UserName ?? "Unknown")</small>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No history available.</p>
+                    }
+                </div>
             </div>
         </div>
     </div>

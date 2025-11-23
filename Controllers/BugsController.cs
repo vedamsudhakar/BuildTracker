@@ -155,7 +155,31 @@ namespace BuildTracker.Controllers
                 {
                     var originalBug = await _context.Bugs.AsNoTracking().FirstOrDefaultAsync(b => b.Id == id);
                     
-                    bug.UpdatedByUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    // History Logging
+                    var historyEntries = new List<BugHistory>();
+                    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                    if (originalBug.Status != bug.Status)
+                    {
+                        historyEntries.Add(new BugHistory { BugId = bug.Id, ChangedByUserId = userId, ChangedDate = DateTime.Now, Description = $"Status changed from {originalBug.Status} to {bug.Status}" });
+                    }
+                    if (originalBug.Severity != bug.Severity)
+                    {
+                        historyEntries.Add(new BugHistory { BugId = bug.Id, ChangedByUserId = userId, ChangedDate = DateTime.Now, Description = $"Severity changed from {originalBug.Severity} to {bug.Severity}" });
+                    }
+                    if (originalBug.AssignedToUserId != bug.AssignedToUserId)
+                    {
+                        var newAssignee = bug.AssignedToUserId != null ? _context.Users.Find(bug.AssignedToUserId)?.UserName : "Unassigned";
+                        var oldAssignee = originalBug.AssignedToUserId != null ? _context.Users.Find(originalBug.AssignedToUserId)?.UserName : "Unassigned";
+                        historyEntries.Add(new BugHistory { BugId = bug.Id, ChangedByUserId = userId, ChangedDate = DateTime.Now, Description = $"Assigned to changed from {oldAssignee} to {newAssignee}" });
+                    }
+
+                    if (historyEntries.Any())
+                    {
+                        _context.BugHistories.AddRange(historyEntries);
+                    }
+
+                    bug.UpdatedByUserId = userId;
                     bug.UpdatedDate = DateTime.Now;
                     bug.CreatedByUserId = originalBug.CreatedByUserId; // Preserve creator
                     bug.CreatedDate = originalBug.CreatedDate;
@@ -222,6 +246,81 @@ namespace BuildTracker.Controllers
             return _context.Bugs.Any(e => e.Id == id);
         }
         
+        // POST: Bugs/UploadAttachment
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UploadAttachment(int bugId, IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return RedirectToAction(nameof(Details), new { id = bugId });
+            }
+
+            var bug = await _context.Bugs.FindAsync(bugId);
+            if (bug == null)
+            {
+                return NotFound();
+            }
+
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "bugs", bugId.ToString());
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+
+            var uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            var attachment = new BugAttachment
+            {
+                BugId = bugId,
+                FileName = file.FileName,
+                FilePath = "/uploads/bugs/" + bugId.ToString() + "/" + uniqueFileName,
+                UploadedDate = DateTime.Now,
+                UploadedByUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+            };
+
+            _context.BugAttachments.Add(attachment);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Details), new { id = bugId });
+        }
+
+        // POST: Bugs/AddComment
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddComment(int bugId, string content)
+        {
+            if (string.IsNullOrWhiteSpace(content))
+            {
+                return RedirectToAction(nameof(Details), new { id = bugId });
+            }
+
+            var bug = await _context.Bugs.FindAsync(bugId);
+            if (bug == null)
+            {
+                return NotFound();
+            }
+
+            var comment = new BugComment
+            {
+                BugId = bugId,
+                Content = content,
+                CreatedDate = DateTime.Now,
+                AuthorUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+            };
+
+            _context.BugComments.Add(comment);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Details), new { id = bugId });
+        }
+
         // API for cascading dropdown
         [HttpGet]
         public JsonResult GetBuildsByApplication(int applicationId)
