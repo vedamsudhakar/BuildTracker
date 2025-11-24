@@ -20,16 +20,27 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
-        var data = _context.Builds
+        var buildData = _context.Builds
             .Include(b => b.Application)
             .GroupBy(b => b.Application.Name)
             .Select(g => new { Name = g.Key, Count = g.Count() })
             .ToList();
 
-        var analytics = data.Select(d => new BuildAnalyticsViewModel
+        var bugData = _context.Bugs
+            .Include(b => b.Application)
+            .Where(b => !b.IsDeleted && b.Status == BugStatus.Open)
+            .GroupBy(b => b.Application.Name)
+            .Select(g => new { Name = g.Key, Count = g.Count() })
+            .ToList();
+
+        // Merge data
+        var appNames = buildData.Select(d => d.Name).Union(bugData.Select(d => d.Name)).Distinct();
+
+        var analytics = appNames.Select(name => new BuildAnalyticsViewModel
         {
-            ApplicationName = d.Name,
-            Count = d.Count
+            ApplicationName = name,
+            Count = buildData.FirstOrDefault(d => d.Name == name)?.Count ?? 0,
+            BugCount = bugData.FirstOrDefault(d => d.Name == name)?.Count ?? 0
         }).ToList();
 
         return View(analytics);

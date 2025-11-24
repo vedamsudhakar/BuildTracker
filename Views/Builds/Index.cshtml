@@ -53,9 +53,9 @@
                 {
                     <a asp-action="Download" asp-route-id="@item.Id" class="btn btn-sm btn-success" title="Download"><i class="bi bi-download"></i></a>
                 }
-                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning" title="Edit"><i class="bi bi-pencil"></i></a> 
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info" title="Details"><i class="bi bi-info-circle"></i></a>
+                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger" title="Delete"><i class="bi bi-trash"></i></a>
             </td>
         </tr>
         <tr class="collapse" id="notes-@item.Id" data-bs-parent="#builds-accordion">

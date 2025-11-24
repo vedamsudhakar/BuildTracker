@@ -50,8 +50,12 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
-            <td>BUG-@item.Id</td>
-            <td>@Html.DisplayFor(modelItem => item.Title)</td>
+            <td><a asp-action="Details" asp-route-id="@item.Id">BUG-@item.Id</a></td>
+            <td>
+                <div class="text-truncate" style="max-width: 400px;" title="@item.Title">
+                    @Html.DisplayFor(modelItem => item.Title)
+                </div>
+            </td>
             <td>@Html.DisplayFor(modelItem => item.Application.Name)</td>
             <td>@(item.Build != null ? item.Build.Version : "-")</td>
             <td>
@@ -66,9 +70,9 @@
             </td>
             <td>@(item.AssignedToUser != null ? item.AssignedToUser.UserName : "-")</td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning" title="Edit"><i class="bi bi-pencil"></i></a>
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info" title="Details"><i class="bi bi-info-circle"></i></a>
+                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger" title="Delete"><i class="bi bi-trash"></i></a>
             </td>
         </tr>
 }

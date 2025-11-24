@@ -4,5 +4,6 @@ namespace BuildTracker.Models
     {
         public string ApplicationName { get; set; } = string.Empty;
         public int Count { get; set; }
+        public int BugCount { get; set; }
     }
 }

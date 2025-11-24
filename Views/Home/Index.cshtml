@@ -11,10 +11,19 @@
 
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-4 d-flex justify-content-center">
+        <div class="col-md-5 d-flex justify-content-center mb-4">
             <div class="card shadow-sm">
                 <div class="card-body d-flex justify-content-center">
-                    <canvas id="buildsChart" width="375" height="375"
+                    <canvas id="buildsChart" width="350" height="350"
+                        style="display: block; box-sizing: border-box; height: 300px; width: 300px;">
+                    </canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5 d-flex justify-content-center mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body d-flex justify-content-center">
+                    <canvas id="bugsChart" width="350" height="350"
                         style="display: block; box-sizing: border-box; height: 300px; width: 300px;">
                     </canvas>
                 </div>
@@ -26,13 +35,21 @@
         @foreach (var item in Model)
         {
             <div class="col-md-3 mb-3">
-                <div class="card text-center border-primary">
+                <div class="card text-center border-primary h-100">
                     <div class="card-header bg-primary text-white">
                         @item.ApplicationName
                     </div>
                     <div class="card-body">
-                        <h3 class="card-title">@item.Count</h3>
-                        <p class="card-text">Builds Released</p>
+                        <div class="row">
+                            <div class="col-6">
+                                <h3 class="card-title">@item.Count</h3>
+                                <p class="card-text small">Builds</p>
+                            </div>
+                            <div class="col-6 border-start">
+                                <h3 class="card-title text-danger">@item.BugCount</h3>
+                                <p class="card-text small">Bugs</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -44,11 +61,11 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        var ctx = document.getElementById('buildsChart').getContext('2d');
-        var buildData = @Html.Raw(Json.Serialize(Model));
+        var analyticsData = @Html.Raw(Json.Serialize(Model));
         
-        var labels = buildData.map(function(e) { return e.buildType; });
-        var data = buildData.map(function(e) { return e.count; });
+        var labels = analyticsData.map(function(e) { return e.applicationName; });
+        var buildCounts = analyticsData.map(function(e) { return e.count; });
+        var bugCounts = analyticsData.map(function(e) { return e.bugCount; });
         
         // Generate random colors for each segment
         var backgroundColors = [
@@ -60,13 +77,15 @@
             'rgba(255, 159, 64, 0.7)'
         ];
 
-        var myChart = new Chart(ctx, {
+        // Builds Chart
+        var ctxBuilds = document.getElementById('buildsChart').getContext('2d');
+        new Chart(ctxBuilds, {
             type: 'doughnut',
             data: {
                 labels: labels,
                 datasets: [{
                     label: '# of Builds',
-                    data: data,
+                    data: buildCounts,
                     backgroundColor: backgroundColors,
                     borderColor: backgroundColors.map(c => c.replace('0.7', '1')),
                     borderWidth: 1
@@ -76,13 +95,32 @@
                 responsive: false,
                 maintainAspectRatio: true,
                 plugins: {
-                    legend: {
-                        position: 'bottom',
-                    },
-                    title: {
-                        display: true,
-                        text: 'Build Distribution'
-                    }
+                    legend: { position: 'bottom' },
+                    title: { display: true, text: 'Builds Distribution' }
+                }
+            }
+        });
+
+        // Bugs Chart
+        var ctxBugs = document.getElementById('bugsChart').getContext('2d');
+        new Chart(ctxBugs, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '# of Bugs',
+                    data: bugCounts,
+                    backgroundColor: backgroundColors,
+                    borderColor: backgroundColors.map(c => c.replace('0.7', '1')),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: false,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    title: { display: true, text: 'Bugs Distribution' }
                 }
             }
         });
