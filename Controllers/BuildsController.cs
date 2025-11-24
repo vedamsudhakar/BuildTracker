@@ -159,10 +159,10 @@ namespace BuildTracker.Controllers
             if (buildInfo != null)
             {
                 _context.Builds.Remove(buildInfo);
-}
-    await _context.SaveChangesAsync();
-    return RedirectToAction(nameof(Index));
-}
+            }
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
     #pragma warning disable SYSLIB0014
         public async Task<IActionResult> Download(int id)
         {

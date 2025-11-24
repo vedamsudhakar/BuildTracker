@@ -42,6 +42,7 @@ namespace BuildTracker.Controllers
 
         public IActionResult Create()
         {
+            ViewBag.Roles = _roleManager.Roles.Select(r => r.Name).ToList();
             return View();
         }
 
@@ -55,9 +56,9 @@ namespace BuildTracker.Controllers
 
                 if (result.Succeeded)
                 {
-                    if (!string.IsNullOrEmpty(model.Role))
+                    if (model.Roles != null && model.Roles.Any())
                     {
-                        await _userManager.AddToRoleAsync(user, model.Role);
+                        await _userManager.AddToRolesAsync(user, model.Roles);
                     }
                     return RedirectToAction(nameof(Index));
                 }
@@ -67,6 +68,59 @@ namespace BuildTracker.Controllers
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
+            ViewBag.Roles = _roleManager.Roles.Select(r => r.Name).ToList();
+            return View(model);
+        }
+
+        public async Task<IActionResult> Edit(string id)
+        {
+            if (id == null) return NotFound();
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null) return NotFound();
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+            var model = new EditUserViewModel
+            {
+                Id = user.Id,
+                Username = user.UserName,
+                Email = user.Email,
+                Roles = userRoles
+            };
+
+            ViewBag.Roles = _roleManager.Roles.Select(r => r.Name).ToList();
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(EditUserViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByIdAsync(model.Id);
+                if (user == null) return NotFound();
+
+                user.UserName = model.Username;
+                user.Email = model.Email;
+
+                var result = await _userManager.UpdateAsync(user);
+                if (result.Succeeded)
+                {
+                    var currentRoles = await _userManager.GetRolesAsync(user);
+                    var rolesToAdd = model.Roles.Except(currentRoles).ToList();
+                    var rolesToRemove = currentRoles.Except(model.Roles).ToList();
+
+                    await _userManager.AddToRolesAsync(user, rolesToAdd);
+                    await _userManager.RemoveFromRolesAsync(user, rolesToRemove);
+
+                    return RedirectToAction(nameof(Index));
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+            }
+            ViewBag.Roles = _roleManager.Roles.Select(r => r.Name).ToList();
             return View(model);
         }
 
@@ -135,6 +189,20 @@ namespace BuildTracker.Controllers
         public string Password { get; set; }
 
         [Required]
-        public string Role { get; set; }
+        public IList<string> Roles { get; set; } = new List<string>();
+    }
+
+    public class EditUserViewModel
+    {
+        public string Id { get; set; }
+
+        [Required]
+        public string Username { get; set; }
+
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+
+        public IList<string> Roles { get; set; } = new List<string>();
     }
 }
