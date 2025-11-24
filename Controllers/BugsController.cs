@@ -19,7 +19,7 @@ namespace BuildTracker.Controllers
         }
 
         // GET: Bugs
-        public async Task<IActionResult> Index(int? applicationId, int? buildId, BugStatus? status, BugSeverity? severity)
+        public async Task<IActionResult> Index(int? applicationId, int? buildId, BugStatus? status, BugSeverity? severity, string? searchString)
         {
             var bugs = _context.Bugs
                 .Include(b => b.Application)
@@ -48,11 +48,17 @@ namespace BuildTracker.Controllers
                 bugs = bugs.Where(b => b.Severity == severity);
             }
 
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                bugs = bugs.Where(b => b.Title.Contains(searchString) || b.Description.Contains(searchString));
+            }
+
             ViewData["ApplicationId"] = new SelectList(_context.Applications, "Id", "Name", applicationId);
             // Build dropdown should ideally be filtered by application, but for filter it's okay to show all or handle via JS
             ViewData["BuildId"] = new SelectList(_context.Builds, "Id", "Version", buildId); 
             ViewData["Status"] = new SelectList(Enum.GetValues(typeof(BugStatus)), status);
             ViewData["Severity"] = new SelectList(Enum.GetValues(typeof(BugSeverity)), severity);
+            ViewData["SearchString"] = searchString;
 
             return View(await bugs.OrderByDescending(b => b.CreatedDate).ToListAsync());
         }
