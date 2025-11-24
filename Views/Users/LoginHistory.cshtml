@@ -1,0 +1,45 @@
+@model IEnumerable<BuildTracker.Models.UserLoginHistory>
+
+@{
+    ViewData["Title"] = "Login History";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2>Login History for @ViewBag.UserName</h2>
+
+    <p>
+        <a asp-action="Index" class="btn btn-secondary">Back to Users</a>
+    </p>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.LoginTime)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.IPAddress)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.UserAgent)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+    @foreach (var item in Model) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LoginTime)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IPAddress)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserAgent)
+                </td>
+            </tr>
+    }
+        </tbody>
+    </table>
+</div>

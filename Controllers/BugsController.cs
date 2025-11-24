@@ -183,7 +183,7 @@ namespace BuildTracker.Controllers
 
                     if (historyEntries.Any())
                     {
-                        _context.BugHistories.AddRange(historyEntries);
+                        _context.BugHistory.AddRange(historyEntries);
                     }
 
                     bug.UpdatedByUserId = userId;

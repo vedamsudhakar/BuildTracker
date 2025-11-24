@@ -11,11 +11,13 @@ namespace BuildTracker.Controllers
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly BuildTracker.Data.BuildTrackerContext _context;
 
-        public UsersController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
+        public UsersController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, BuildTracker.Data.BuildTrackerContext context)
         {
             _userManager = userManager;
             _roleManager = roleManager;
+            _context = context;
         }
 
         public async Task<IActionResult> Index()
@@ -86,6 +88,28 @@ namespace BuildTracker.Controllers
                 await _userManager.DeleteAsync(user);
             }
             return RedirectToAction(nameof(Index));
+        }
+        // GET: Users/LoginHistory/5
+        public async Task<IActionResult> LoginHistory(string id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var history = await _context.UserLoginHistory
+                .Where(h => h.UserId == id)
+                .OrderByDescending(h => h.LoginTime)
+                .ToListAsync();
+
+            ViewBag.UserName = user.UserName;
+            return View(history);
         }
     }
 

@@ -10,11 +10,13 @@ namespace BuildTracker.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
+        private readonly BuildTracker.Data.BuildTrackerContext _context;
 
-        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger, BuildTracker.Data.BuildTrackerContext context)
         {
             _signInManager = signInManager;
             _logger = logger;
+            _context = context;
         }
 
         [BindProperty]
@@ -71,6 +73,22 @@ namespace BuildTracker.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
+
+                    // Record Login History
+                    var user = await _signInManager.UserManager.FindByNameAsync(Input.Username);
+                    if (user != null)
+                    {
+                        var history = new BuildTracker.Models.UserLoginHistory
+                        {
+                            UserId = user.Id,
+                            LoginTime = DateTime.Now,
+                            IPAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
+                            UserAgent = Request.Headers["User-Agent"].ToString()
+                        };
+                        _context.UserLoginHistory.Add(history);
+                        await _context.SaveChangesAsync();
+                    }
+
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)

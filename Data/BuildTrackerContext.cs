@@ -18,6 +18,7 @@ namespace BuildTracker.Data
         public DbSet<Bug> Bugs { get; set; }
         public DbSet<BugAttachment> BugAttachments { get; set; }
         public DbSet<BugComment> BugComments { get; set; }
-        public DbSet<BugHistory> BugHistories { get; set; }
+        public DbSet<BugHistory> BugHistory { get; set; }
+        public DbSet<UserLoginHistory> UserLoginHistory { get; set; }
     }
 }
